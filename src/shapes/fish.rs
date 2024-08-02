@@ -29,7 +29,7 @@ impl Fish {
             mouth_color,
             facing_right: if rand::thread_rng().gen_range(0.0..1.0) > 0.5 {true} else {false}, 
             created: Instant::now(),
-            lifespan: Duration::from_secs(10)
+            lifespan: Duration::from_secs(20)
         }
     }
 

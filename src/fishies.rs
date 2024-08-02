@@ -25,6 +25,7 @@ use ratatui::widgets::Widget;
 use crate::shapes::water::Water;
 use crate::shapes::dock::Dock;
 use crate::shapes::fish::Fish;
+use crate::shapes::fisherman::Fisherman;
 use rand::Rng;
 
 pub struct Fishies {
@@ -33,6 +34,8 @@ pub struct Fishies {
     maximum_fish_population: usize,
     dock: Dock,
     water: Water,
+    fisherman: Fisherman,
+    fish_colors: [Color; 7],
 }
 
 impl Fishies {
@@ -40,10 +43,20 @@ impl Fishies {
         let frame = Rect::new(0, 0, 256, 128); 
         Self {
             frame,
+            fish_colors: [
+                Color::Red,
+                Color::Green,
+                Color::Yellow,
+                Color::Magenta,
+                Color::Cyan,
+                Color::LightRed,
+                Color::LightGreen,
+            ],
             fish: vec![],
             maximum_fish_population: 8,
             dock: Dock {frame, color: Color::Rgb(210, 180, 140)},
             water: Water {frame, color: Color::LightBlue},
+            fisherman: Fisherman {frame, shoe_color: Color::DarkGray, pants_color: Color::Rgb(92, 64, 51)},
         }
     }
 
@@ -85,9 +98,16 @@ impl Fishies {
     }
 
     fn update_fish(&mut self) {
-        let fish_should_spawn = if self.fish.len() >= self.maximum_fish_population {false} else {rand::thread_rng().gen_range(0.0..1.0) > 0.8};
+        let fish_should_spawn = if self.fish.len() >= self.maximum_fish_population {false} else {rand::thread_rng().gen_range(0.0..1.0) > 0.7};
         if fish_should_spawn {
-            self.fish.push(Fish::new(rand::thread_rng().gen_range(self.water.left()..self.water.right()), rand::thread_rng().gen_range(self.water.bottom()..self.water.top()), self.water.top(), Color::Green, Color::Red));
+            let mouth_color = self.fish_colors[rand::thread_rng().gen_range(0..self.fish_colors.len())];
+            let mut body_color = self.fish_colors[rand::thread_rng().gen_range(0..self.fish_colors.len())];
+
+            while body_color == mouth_color {
+                body_color = self.fish_colors[rand::thread_rng().gen_range(0..self.fish_colors.len())];
+            }
+
+            self.fish.push(Fish::new(rand::thread_rng().gen_range(self.water.left()..self.water.right()), rand::thread_rng().gen_range(self.water.bottom()..self.water.top()), self.water.top(), body_color, mouth_color));
         }
 
         self.fish.retain(|f| !f.is_dead());
@@ -104,6 +124,8 @@ impl Fishies {
             .marker(Marker::HalfBlock)
             .paint(|ctx| {
                 ctx.draw(&self.dock);
+                ctx.layer();
+                ctx.draw(&self.fisherman);
                 ctx.layer();
                 ctx.draw(&self.water);
                 for f in self.fish.iter() {

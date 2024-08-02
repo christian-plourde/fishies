@@ -41,7 +41,7 @@ impl Fishies {
         Self {
             frame,
             fish: vec![],
-            maximum_fish_population: 5,
+            maximum_fish_population: 8,
             dock: Dock {frame, color: Color::Rgb(210, 180, 140)},
             water: Water {frame, color: Color::LightBlue},
         }
@@ -51,7 +51,7 @@ impl Fishies {
         let mut terminal = init_terminal()?;
         let mut app = Self::new();
         let mut last_tick = Instant::now();
-        let tick_rate = Duration::from_millis(500);
+        let tick_rate = Duration::from_millis(400);
 
         loop {
             let _ = terminal.draw(|frame| app.ui(frame));
@@ -87,10 +87,14 @@ impl Fishies {
     fn update_fish(&mut self) {
         let fish_should_spawn = if self.fish.len() >= self.maximum_fish_population {false} else {rand::thread_rng().gen_range(0.0..1.0) > 0.8};
         if fish_should_spawn {
-            self.fish.push(Fish::new(rand::thread_rng().gen_range(self.water.left()..self.water.right()), rand::thread_rng().gen_range(self.water.bottom()..self.water.top()), Color::Green, Color::Red));
+            self.fish.push(Fish::new(rand::thread_rng().gen_range(self.water.left()..self.water.right()), rand::thread_rng().gen_range(self.water.bottom()..self.water.top()), self.water.top(), Color::Green, Color::Red));
         }
 
         self.fish.retain(|f| !f.is_dead());
+
+        self.fish.iter_mut().for_each(|f| {
+            f.r#move();
+        })
     }
 
     fn fishies(&mut self) -> impl Widget + '_ {

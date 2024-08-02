@@ -19,7 +19,7 @@ impl Fish {
             y,
             body_color,
             mouth_color,
-            facing_right: if rand::thread_rng().gen_range(0.0..1.0) > 0.0 {true} else {false}, 
+            facing_right: if rand::thread_rng().gen_range(0.0..1.0) > 0.5 {true} else {false}, 
             created: Instant::now(),
             lifespan: Duration::from_secs(10)
         }
@@ -36,7 +36,7 @@ impl Fish {
 
 impl Shape for Fish {
     fn draw(&self, painter: &mut Painter) {
-        let size: u16 = 6;
+        let size: u16 = 7;
 
         if self.facing_right && !(self.x as i16 - size as i16 > 0 && self.y as i16 - size as i16 > 0) {
             return;
@@ -61,11 +61,11 @@ impl Shape for Fish {
             }
         }
 
-        let tail_x_range = if self.facing_right {self.x - size..self.x - size + 3} else {self.x + size..self.x + size + 3};
+        let tail_x_range = if self.facing_right {self.x - size..self.x - size + 1} else {self.x + size..self.x + size + 1};
 
-        for (i, x) in tail_x_range.enumerate() {
+        for x in tail_x_range {
             for y in y_range.clone() {
-                if y >= (y_range.start as u16) + ((i%3) as u16) && y <= (y_range.end as u16) - ((i%3) as u16) { 
+                if y >= y_range.start + 2 && y <= y_range.end - 2 { 
                     match painter.get_point(x.into(), y.into()) {
                         Some((paint_x, paint_y)) => painter.paint(paint_x, paint_y, self.body_color),
                         None => (),

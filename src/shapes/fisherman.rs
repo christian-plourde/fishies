@@ -4,6 +4,9 @@ pub struct Fisherman {
     pub frame: Rect,
     pub shoe_color: Color,
     pub pants_color: Color,
+    pub shirt_color: Color,
+    pub skin_color: Color,
+    pub rod_color: Color,
 }
 
 impl Shape for Fisherman {
@@ -29,6 +32,45 @@ impl Shape for Fisherman {
         for x in shoe_2_x..=shoe_1_x {
             painter.paint(x, (shoe_1_y - 5).into(), self.pants_color);
             painter.paint(x, (shoe_1_y - 6).into(), self.pants_color);
+            painter.paint(x, (shoe_1_y - 7).into(), self.shoe_color);
+            painter.paint(x, (shoe_1_y - 8).into(), self.shirt_color);
+            painter.paint(x, (shoe_1_y - 9).into(), self.shirt_color);
+            painter.paint(x, (shoe_1_y - 10).into(), self.shirt_color);
+            painter.paint(x, (shoe_1_y - 11).into(), self.shirt_color);
+            painter.paint(x, (shoe_1_y - 12).into(), self.shirt_color);
+            painter.paint(x, (shoe_1_y - 13).into(), self.shirt_color);
         }
+
+        painter.paint(shoe_2_x, (shoe_1_y - 14).into(), self.skin_color);
+        painter.paint(shoe_2_x + 1, (shoe_1_y - 14).into(), self.skin_color);
+        painter.paint(shoe_2_x + 2, (shoe_1_y - 14).into(), self.skin_color);
+        painter.paint(shoe_2_x, (shoe_1_y - 15).into(), self.skin_color);
+        painter.paint(shoe_2_x + 1, (shoe_1_y - 15).into(), self.skin_color);
+        painter.paint(shoe_2_x + 2, (shoe_1_y - 15).into(), self.skin_color);
+        painter.paint(shoe_2_x, (shoe_1_y - 16).into(), self.skin_color);
+        painter.paint(shoe_2_x + 1, (shoe_1_y - 16).into(), self.skin_color);
+        painter.paint(shoe_2_x + 2, (shoe_1_y - 16).into(), self.skin_color);
+        painter.paint(shoe_2_x, (shoe_1_y - 17).into(), self.shoe_color);
+        painter.paint(shoe_2_x + 1, (shoe_1_y - 17).into(), self.shoe_color);
+        painter.paint(shoe_2_x + 2, (shoe_1_y - 17).into(), self.shoe_color);
+        painter.paint(shoe_2_x + 3, (shoe_1_y - 17).into(), self.shoe_color);
+        painter.paint(shoe_2_x, (shoe_1_y - 18).into(), self.shoe_color);
+        painter.paint(shoe_2_x + 1, (shoe_1_y - 18).into(), self.shoe_color);
+        painter.paint(shoe_2_x + 2, (shoe_1_y - 18).into(), self.shoe_color);
+
+        painter.paint(shoe_1_x + 1, (shoe_1_y - 12).into(), self.shirt_color);
+        painter.paint(shoe_1_x + 1, (shoe_1_y - 11).into(), self.shirt_color);
+        painter.paint(shoe_1_x + 2, (shoe_1_y - 10).into(), self.shirt_color);
+        painter.paint(shoe_1_x + 2, (shoe_1_y - 9).into(), self.shirt_color);
+        painter.paint(shoe_1_x + 3, (shoe_1_y - 8).into(), self.shirt_color);
+        painter.paint(shoe_1_x + 3, (shoe_1_y - 8).into(), self.shirt_color);
+
+        painter.paint(shoe_1_x + 4, (shoe_1_y - 9).into(), self.rod_color);
+        painter.paint(shoe_1_x + 5, (shoe_1_y - 10).into(), self.rod_color);
+        painter.paint(shoe_1_x + 6, (shoe_1_y - 11).into(), self.rod_color);
+        painter.paint(shoe_1_x + 7, (shoe_1_y - 12).into(), self.rod_color);
+        painter.paint(shoe_1_x + 8, (shoe_1_y - 13).into(), self.rod_color);
+        painter.paint(shoe_1_x + 9, (shoe_1_y - 14).into(), self.rod_color);
+        painter.paint(shoe_1_x + 10, (shoe_1_y - 15).into(), self.rod_color);
     }
 }

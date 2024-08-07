@@ -56,7 +56,7 @@ impl Fishies {
             maximum_fish_population: 8,
             dock: Dock {frame, color: Color::Rgb(210, 180, 140)},
             water: Water {frame, color: Color::LightBlue},
-            fisherman: Fisherman {frame, shoe_color: Color::DarkGray, pants_color: Color::Rgb(92, 64, 51)},
+            fisherman: Fisherman {frame, shoe_color: Color::DarkGray, pants_color: Color::Rgb(92, 64, 51), shirt_color: Color::Green, skin_color: Color::Rgb(255, 195, 170), rod_color: Color::Rgb(92, 64, 51)},
         }
     }
 

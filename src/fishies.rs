@@ -41,6 +41,7 @@ pub struct Fishies {
 impl Fishies {
     fn new() -> Self {
         let frame = Rect::new(0, 0, 256, 128); 
+        let water = Water {frame, color: Color::LightBlue};
         Self {
             frame,
             fish_colors: [
@@ -55,8 +56,8 @@ impl Fishies {
             fish: vec![],
             maximum_fish_population: 8,
             dock: Dock {frame, color: Color::Rgb(210, 180, 140)},
-            water: Water {frame, color: Color::LightBlue},
-            fisherman: Fisherman::new(frame, Color::Rgb(92, 64, 51), Color::Rgb(92, 64, 51), Color::Green, Color::Rgb(255, 195, 170), Color::DarkGray),
+            fisherman: Fisherman::new(frame, water.top().into(), Color::Rgb(92, 64, 51), Color::Rgb(92, 64, 51), Color::Green, Color::Rgb(255, 195, 170), Color::DarkGray),
+            water,
         }
     }
 
@@ -67,26 +68,28 @@ impl Fishies {
         let tick_rate = Duration::from_millis(400);
 
         loop {
-            let _ = terminal.draw(|frame| app.ui(frame));
             let timeout = tick_rate.saturating_sub(last_tick.elapsed());
             if event::poll(timeout)? {
                 if let Event::Key(key) = event::read()? {
                     if key.code == KeyCode::Char('c') && key.modifiers.contains(KeyModifiers::CONTROL) {
                         break;
                     }
+
+                    if key.code == KeyCode::Char('h') {
+                        app.fisherman.cast(false);
+                    }
                 }
             }
 
+            else {
+                let _ = terminal.draw(|frame| app.ui(frame));
+            }
+
             if last_tick.elapsed() >= tick_rate {
-                app.on_tick();
                 last_tick = Instant::now();
             }
         }
         restore_terminal()
-    }
-
-    fn on_tick(&mut self) {
-
     }
 
     fn ui(&mut self, frame: &mut Frame) {
@@ -117,13 +120,10 @@ impl Fishies {
         })
     }
 
-    fn update_rod(&mut self) {
-        self.fisherman.rotate_rod(0.5);
-    }
-
     fn fishies(&mut self) -> impl Widget + '_ {
         self.update_fish();
-        self.update_rod();
+        self.fisherman.rotate_rod();
+        self.fisherman.move_hook();
 
         Canvas::default()
             .marker(Marker::HalfBlock)

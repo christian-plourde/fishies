@@ -1,4 +1,5 @@
 use ratatui::{layout::Rect, style::Color, widgets::canvas::{Painter, Shape}};
+use rand::Rng;
 
 pub struct Fisherman {
     pub frame: Rect,
@@ -9,13 +10,20 @@ pub struct Fisherman {
     pub rod_color: Color,
     rod_geometry: Vec<(f64, f64)>,
     current_rotation: f64,
-    hook_location: (f64, f64),
+    pub hook_location: (f64, f64),
     rotation_velocity: f64,
     hook_velocity: (f64, f64),
     surface_level: f64,
+    water_bottom: f64,
+    cast_depth: f64,
+    pub has_fish_hooked: bool,
 }
 
 impl Fisherman {
+    pub fn is_in_base_position(&self) -> bool {
+        return self.hook_location.0 == Fisherman::get_base_hook_location(self.frame).0 && self.hook_location.1 == Fisherman::get_base_hook_location(self.frame).1;
+    }
+
     pub fn get_base_geometry(frame: Rect) -> Vec<(f64, f64)> {
         let shoe_x = (frame.x as f64) + (frame.width as f64)/4.0 - 7.0;
         let shoe_y = (frame.height as f64)/2.0 + 6.0;
@@ -35,7 +43,7 @@ impl Fisherman {
         (hook_x, hook_y - 3.0)
     }
 
-    fn get_rod_end(&self) -> (f64, f64) {
+    pub fn get_rod_end(&self) -> (f64, f64) {
         self.rod_geometry[self.rod_geometry.len() - 1]
     }
 
@@ -63,7 +71,16 @@ impl Fisherman {
         }
     }
 
-    pub fn new(frame: Rect, surface_level: f64, pants_color: Color, rod_color: Color, shirt_color: Color, skin_color: Color, shoe_color: Color) -> Self {
+    pub fn get_line_angle(&self) -> f64 {
+        let rod_end = self.get_rod_end();
+
+        if self.hook_location.0 == rod_end.0 {
+            return -std::f64::consts::PI/2.0;
+        }
+        return f64::atan((self.hook_location.1 - rod_end.1)/(self.hook_location.0 - rod_end.0));
+    }
+
+    pub fn new(frame: Rect, surface_level: f64, water_bottom: f64, pants_color: Color, rod_color: Color, shirt_color: Color, skin_color: Color, shoe_color: Color) -> Self {
         Self {
             frame, 
             pants_color,
@@ -77,13 +94,17 @@ impl Fisherman {
             rotation_velocity: 0.0,
             hook_velocity: (0.0, 0.0),
             surface_level,
+            water_bottom,
+            cast_depth: 0.0,
+            has_fish_hooked: false,
         }
     }
 
     pub fn cast(&mut self, ready: bool) {
         if ready {
             self.rotation_velocity = -0.7;
-            self.hook_velocity = (8.0, -8.0);
+            self.hook_velocity = (rand::thread_rng().gen_range(8.0..28.0), rand::thread_rng().gen_range(-18.0..-8.0));
+            self.cast_depth = rand::thread_rng().gen_range(0.0..self.surface_level - self.water_bottom); 
         }
 
         else {
@@ -119,14 +140,14 @@ impl Fisherman {
 
     pub fn move_hook(&mut self) {
         self.hook_location = (self.hook_location.0 + self.hook_velocity.0, self.hook_location.1 + self.hook_velocity.1);
-        if self.hook_location.1 < self.surface_level {
-            self.hook_location.1 = self.surface_level;
+        if self.hook_location.1 < self.surface_level - self.cast_depth {
+            self.hook_location.1 = self.surface_level - self.cast_depth;
             self.hook_velocity = (-4.0, 0.0);
         }
 
         if self.hook_location.0 < self.get_rod_end().0 {
             self.hook_location.0 = self.get_rod_end().0;
-            self.hook_velocity = (0.0, 8.0);
+            self.hook_velocity = (0.0, 10.0);
         }
 
         if self.hook_location.0 <= Self::get_base_hook_location(self.frame).0 && self.hook_location.1 >= Self::get_base_hook_location(self.frame).1 {

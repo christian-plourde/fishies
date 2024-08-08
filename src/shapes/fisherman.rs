@@ -50,15 +50,14 @@ impl Fisherman {
         }
 
         else {
-            let slope = (self.hook_location.0 - rod_end.0)/(self.hook_location.1 - rod_end.1);
+            let slope = (self.hook_location.1 - rod_end.1)/(self.hook_location.0 - rod_end.0);
             let intercept = rod_end.1 - slope*rod_end.0;
 
             let mut locations: Vec<(f64, f64)> = vec![];
             let mut current_x = rod_end.0;
-            while current_x + 1.0 < self.hook_location.0 {
-                let y = slope*current_x + intercept;
-                locations.push((current_x, y));
-                current_x += 1.0;
+            while current_x + 0.1 < self.hook_location.0 {
+                current_x += 0.1;
+                locations.push((current_x, slope*current_x + intercept));
             }
             return locations;
         }
@@ -84,7 +83,7 @@ impl Fisherman {
     pub fn cast(&mut self, ready: bool) {
         if ready {
             self.rotation_velocity = -0.7;
-            self.hook_velocity = (1.9, -1.1);
+            self.hook_velocity = (8.0, -8.0);
         }
 
         else {
